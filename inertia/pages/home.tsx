@@ -1,30 +1,35 @@
 export default function Home() {
   return (
     <>
-      <div className="hero">
-        <h1>It works — welcome to the power of a full-stack React app</h1>
-        <p>
-          Powered by Inertia and React, this setup blends server-driven routing with rich
-          client-side interactivity — seamless, fast, and cohesive.
-        </p>
-      </div>
-
-      <div className="cards">
-        <a href="https://docs.adonisjs.com/introduction" target="_blank">
-          <h3>Official Docs &nbsp;›</h3>
-          <p>Comprehensive reference for building with AdonisJS</p>
-        </a>
-
-        <a href="https://adocasts.com/" target="_blank">
-          <h3>Adocasts &nbsp;›</h3>
-          <p>Guided video tutorials for everyday development</p>
-        </a>
-
-        <a href="https://discord.gg/vDcEjq6" target="_blank">
-          <h3>Discord &nbsp;›</h3>
-          <p>Connect with developers building with AdonisJS every day</p>
-        </a>
-      </div>
+      <header className="navbar bg-base-100 shadow-sm px-80">
+        <div className="navbar-start">
+          <a className="text-3xl" href="/">
+            <b>Completio</b>
+          </a>
+        </div>
+        <div className="flex flex-row gap-4 navbar-end">
+          <a href="/login">Login</a>
+          <a href="/signup" className="btn btn-accent">
+            Get Started
+          </a>
+        </div>
+      </header>
+      <main>
+        <div className="h-150 hero bg-base-200">
+          <div className="hero-content text-center">
+            <div className="max-w-md">
+              <h1 className="text-5xl font-bold">Hello there</h1>
+              <p className="py-6">
+                Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi
+                exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.
+              </p>
+              <a className="btn btn-primary" href="/signup">
+                Get Started &gt;
+              </a>
+            </div>
+          </div>
+        </div>
+      </main>
     </>
   )
 }

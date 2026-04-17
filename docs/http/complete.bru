@@ -1,0 +1,17 @@
+meta {
+  name: Complete
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/api/complete
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "prompt": "hello wor"
+  }
+}
