@@ -1,5 +1,8 @@
 export interface CompletionOptions {
   maxTokens?: number
+  context?: string
+  systemPrompt?: string
+  stopSequences?: string[]
 }
 
 export interface AiHandler {

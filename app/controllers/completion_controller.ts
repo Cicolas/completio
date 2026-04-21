@@ -8,8 +8,8 @@ export default class CompletionController {
   constructor(private aiService: AiService) {}
 
   async complete({ request, response }: HttpContext) {
-    const { prompt } = await request.validateUsing(completionValidator)
-    const completion = await this.aiService.complete(prompt)
+    const { prompt, context, maxTokens } = await request.validateUsing(completionValidator)
+    const completion = await this.aiService.complete(prompt, { context, maxTokens })
     return response.json({ completion })
   }
 }
