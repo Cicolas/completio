@@ -16,22 +16,22 @@ const SessionController = () => import('#controllers/user/session_controller')
 
 router
   .group(() => {
-    router.post('complete', [CompletionController, 'complete'])
+    router.post('complete', [CompletionController, 'complete']).as('completion.complete')
 
     router
       .group(() => {
-        router.get('signup', [NewAccountController, 'create'])
-        router.post('signup', [NewAccountController, 'store'])
+        router.get('signup', [NewAccountController, 'create']).as('new_account.create')
+        router.post('signup', [NewAccountController, 'store']).as('new_account.store')
 
-        router.get('login', [SessionController, 'create'])
-        router.post('login', [SessionController, 'store'])
+        router.get('login', [SessionController, 'create']).as('session.create')
+        router.post('login', [SessionController, 'store']).as('session.store')
       })
       .prefix('auth')
       .use(middleware.guest())
 
     router
       .group(() => {
-        router.post('logout', [SessionController, 'destroy'])
+        router.post('logout', [SessionController, 'destroy']).as('session.destroy')
       })
       .use(middleware.auth())
   })

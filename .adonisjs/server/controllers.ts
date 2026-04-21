@@ -3,10 +3,4 @@
  * DO NOT EDIT manually
  */
 
-export const controllers = {
-  Completion: () => import('#controllers/completion_controller'),
-  user: {
-    NewAccount: () => import('#controllers/user/new_account_controller'),
-    Session: () => import('#controllers/user/session_controller'),
-  },
-}
+export const controllers = {}
