@@ -89,7 +89,9 @@
   "hotHook": {
     "boundaries": [
       "./app/controllers/**/*.ts",
-      "./app/middleware/*.ts"
+      "./app/middleware/*.ts",
+      "./app/services/**/*.ts",
+      "./app/validators/**/*.ts"
     ]
   },
   "prettier": "@adonisjs/prettier-config"

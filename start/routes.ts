@@ -35,6 +35,10 @@ router
       })
       .use(middleware.auth())
   })
+  .use(middleware.apiResponse())
   .prefix('api')
+
+router.get('/signup', ({ response }) => response.redirect().toPath('/api/auth/signup')).use(middleware.guest())
+router.get('/login', ({ response }) => response.redirect().toPath('/api/auth/login')).use(middleware.guest())
 
 router.on('/').renderInertia('home', {}).as('home')

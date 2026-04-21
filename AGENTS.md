@@ -2,7 +2,7 @@
 
 ## Project
 
-**Completio** is an AdonisJS + React/Inertia application for AI-powered text completion. The current codebase is still early-stage: the completion API is wired through an `AiService`, but the only provider implemented today is a stub handler.
+**Completio** is an AdonisJS + React/Inertia application for AI-powered text completion. The completion API is wired through an `AiService` with a provider-agnostic handler interface. Anthropic is supported when configured, and a stub handler remains available as a fallback.
 
 ## Tech Stack
 
@@ -73,18 +73,51 @@ POST /api/complete
   -> CompletionController.complete
   -> completionValidator
   -> AiService.complete
-  -> current handler: StubHandler
+  -> current handler: AnthropicHandler when configured, otherwise StubHandler
 ```
 
 - `app/common/interfaces/ai_handler.ts` defines the provider contract.
-- `app/services/ai_service.ts` is the facade used by controllers.
-- `app/services/handlers/stub_handler.ts` is placeholder logic and should be replaced or extended when adding a real AI provider.
+- `app/services/ai_service.ts` is the facade used by controllers and builds the shared completion system prompt and stop sequences for all handlers.
+- `app/services/completion_system_prompt.ts` defines the global completion system prompt, including the continuation-only behavior rules, appends optional request context, and provides the shared punctuation stop sequences used for short completions.
+- `app/services/handlers/anthropic_handler.ts` calls the Anthropic Messages API, consumes the shared system prompt from handler options, sends the incoming `prompt` as the `user` message content, and returns an empty string when Anthropic responds without text content.
+- `POST /api/complete` accepts `prompt` (which may be an empty string), an optional `context` string, and an optional `maxTokens` number. Anthropic falls back to `64` tokens when `maxTokens` is omitted.
+
+### API Response Shape
+
+- API routes under `/api` are wrapped by `app/middleware/api_response_middleware.ts`.
+- JSON responses are normalized to the shared `ApiResponse<T>` shape from `app/common/interfaces/api_response.ts`.
+
+```json
+{
+  "payload": {},
+  "error": null,
+  "message": null
+}
+```
+
+- String responses are mapped into `message` with `payload: null`.
+- Legacy objects containing `data` are remapped to `payload`.
+
+### Error Handling
+
+- `app/exceptions/internal_error.ts` defines the shared `InternalError` class with static constructors like `badRequest`, `forbidden`, `conflict`, `upstream`, and `unexpected`.
+- `app/exceptions/internal_error_builder.ts` normalizes unknown errors into `InternalError` instances and produces API error responses.
+- API failures are serialized as:
+
+```json
+{
+  "payload": null,
+  "error": "ERROR_IDENTIFIER",
+  "message": "Human readable message"
+}
+```
 
 ### Auth Flow
 
 - Session-based auth uses the `web` guard from `config/auth.ts`.
 - Signup and login controllers live under `app/controllers/user/`.
-- Auth routes are grouped under `/api/auth/...` in `start/routes.ts`.
+- Auth form handlers live under `/api/auth/...` in `start/routes.ts`.
+- Public `GET /login` and `GET /signup` routes redirect to those auth pages.
 - Shared authenticated user data is exposed to Inertia via `app/middleware/inertia_middleware.ts` and `app/transformers/user_transformer.ts`.
 
 ## Routing
@@ -92,6 +125,8 @@ POST /api/complete
 Routes are defined in `start/routes.ts`.
 
 - `POST /api/complete`
+- `GET /signup`
+- `GET /login`
 - `GET /api/auth/signup`
 - `POST /api/auth/signup`
 - `GET /api/auth/login`
@@ -145,3 +180,14 @@ Path aliases are defined in `package.json` `imports`.
 - Keep the completion system provider-agnostic by extending `AiHandler` implementations instead of coupling controllers to a specific SDK.
 - Preserve Inertia shared props behavior when changing auth or flash handling.
 - Prefer small changes that fit the current lightweight structure rather than adding heavy architecture early.
+- When changing routes, request/response contracts, env/config, or core behavior, update `AGENTS.md` or the relevant repo docs in the same change.
+
+## Bibliography
+
+- AdonisJS documentation: https://docs.adonisjs.com/
+- AdonisJS routing: https://docs.adonisjs.com/guides/basics/routing
+- AdonisJS Inertia: https://docs.adonisjs.com/guides/views-and-templates/inertia
+- AdonisJS Lucid ORM: https://docs.adonisjs.com/guides/database/introduction
+- DaisyUI documentation: https://daisyui.com/
+- DaisyUI components: https://daisyui.com/components/
+- DaisyUI themes: https://daisyui.com/docs/themes/
