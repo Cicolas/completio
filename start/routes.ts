@@ -8,27 +8,30 @@
 */
 
 import { middleware } from '#start/kernel'
-import { controllers } from '#generated/controllers'
 import router from '@adonisjs/core/services/router'
+
+const CompletionController = () => import('#controllers/completion_controller')
+const NewAccountController = () => import('#controllers/user/new_account_controller')
+const SessionController = () => import('#controllers/user/session_controller')
 
 router
   .group(() => {
-    router.post('complete', [controllers.Completion, 'complete'])
+    router.post('complete', [CompletionController, 'complete']).as('completion.complete')
 
     router
       .group(() => {
-        router.get('signup', [controllers.user.NewAccount, 'create'])
-        router.post('signup', [controllers.user.NewAccount, 'store'])
+        router.get('signup', [NewAccountController, 'create']).as('new_account.create')
+        router.post('signup', [NewAccountController, 'store']).as('new_account.store')
 
-        router.get('login', [controllers.user.Session, 'create'])
-        router.post('login', [controllers.user.Session, 'store'])
+        router.get('login', [SessionController, 'create']).as('session.create')
+        router.post('login', [SessionController, 'store']).as('session.store')
       })
       .prefix('auth')
       .use(middleware.guest())
 
     router
       .group(() => {
-        router.post('logout', [controllers.user.Session, 'destroy'])
+        router.post('logout', [SessionController, 'destroy']).as('session.destroy')
       })
       .use(middleware.auth())
   })
